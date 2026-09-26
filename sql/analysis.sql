@@ -1,16 +1,19 @@
 
 -- ============================================================
 -- E-COMMERCE SALES ANALYSIS
+-- АНАЛИЗ ПРОДАЖ ИНТЕРНЕТ-МАГАЗИНА
 -- ============================================================
 -- Database: ecommerce_analysis
--- Main rule:
+-- Main rule / Основное правило:
 -- Revenue is calculated only for Completed orders.
+-- Выручка рассчитывается только по завершённым заказам.
 -- Transaction price from order_items is used for revenue.
+-- Для выручки используется цена транзакции из order_items.
 -- ============================================================
 
 
 -- ============================================================
--- 0. DATABASE AND TABLES
+-- 0. DATABASE AND TABLES / БАЗА ДАННЫХ И ТАБЛИЦЫ
 -- ============================================================
 
 CREATE DATABASE ecommerce_analysis;
@@ -70,7 +73,7 @@ CREATE TABLE order_items (
 
 
 -- ============================================================
--- 1. DATA VALIDATION
+-- 1. DATA VALIDATION / ПРОВЕРКА ДАННЫХ
 -- ============================================================
 
 SELECT 'customers' AS table_name, COUNT(*) AS row_count
@@ -93,10 +96,10 @@ FROM order_items;
 
 
 -- ============================================================
--- 2. REVENUE AND AVERAGE ORDER VALUE
+-- 2. REVENUE AND AVERAGE ORDER VALUE / ВЫРУЧКА И СРЕДНИЙ ЧЕК
 -- ============================================================
 
--- Total revenue from Completed orders
+-- Total revenue from Completed orders / Общая выручка по завершённым заказам
 
 SELECT
     SUM(order_items.quantity * order_items.unit_price) AS revenue
@@ -106,7 +109,7 @@ JOIN order_items
 WHERE orders.status = 'Completed';
 
 
--- Revenue by order
+-- Revenue by order status / Выручка по статусам заказов
 
 SELECT
     orders.order_id,
@@ -118,7 +121,7 @@ WHERE status = 'Completed'
 GROUP BY orders.order_id;
 
 
--- Average Order Value
+-- Average Order Value / Средний чек
 
 SELECT
     AVG(order_revenue) AS avg_order_value
@@ -135,10 +138,10 @@ FROM (
 
 
 -- ============================================================
--- 3. DATA QUALITY: MISSING PRICES
+-- 3. DATA QUALITY: MISSING PRICES / КАЧЕСТВО ДАННЫХ: ПРОПУЩЕННЫЕ ЦЕНЫ
 -- ============================================================
 
--- Missing prices in all order items
+-- Missing prices in all order items / Пропущенные цены во всех позициях
 
 SELECT
     COUNT(*) AS missing_price_items,
@@ -147,7 +150,7 @@ FROM order_items
 WHERE unit_price IS NULL;
 
 
--- Missing prices in Completed orders
+-- Missing prices in Completed orders / Пропущенные цены в завершённых заказах
 
 SELECT
     COUNT(*) AS missing_price_items,
@@ -159,7 +162,7 @@ WHERE orders.status = 'Completed'
   AND order_items.unit_price IS NULL;
 
 
--- Share of Completed order items with missing prices
+-- Share of Completed order items with missing prices / Доля позиций с пропущенной ценой
 
 SELECT
     COUNT(*) AS completed_items,
@@ -175,7 +178,7 @@ WHERE orders.status = 'Completed';
 
 
 -- ============================================================
--- 4. REVENUE BY MONTH
+-- 4. REVENUE BY MONTH / ВЫРУЧКА ПО МЕСЯЦАМ
 -- ============================================================
 
 SELECT
@@ -195,7 +198,7 @@ ORDER BY
 
 
 -- ============================================================
--- 5. REVENUE BY CATEGORY
+-- 5. REVENUE BY CATEGORY / ВЫРУЧКА ПО КАТЕГОРИЯМ
 -- ============================================================
 
 SELECT
@@ -212,10 +215,10 @@ ORDER BY revenue DESC;
 
 
 -- ============================================================
--- 6. REVENUE BY PRODUCT
+-- 6. REVENUE BY PRODUCT / ВЫРУЧКА ПО ТОВАРАМ
 -- ============================================================
 
--- Top 10 products by revenue
+-- Top 10 products by revenue / Топ-10 товаров по выручке
 
 SELECT
     products.product_id,
@@ -235,10 +238,10 @@ LIMIT 10;
 
 
 -- ============================================================
--- 7. CUSTOMER ANALYSIS
+-- 7. CUSTOMER ANALYSIS / АНАЛИЗ КЛИЕНТОВ
 -- ============================================================
 
--- Top 10 customers by revenue
+-- Top 10 customers by revenue / Топ-10 клиентов по выручке
 
 SELECT
     customers.customer_id,
@@ -259,7 +262,7 @@ ORDER BY customer_revenue DESC
 LIMIT 10;
 
 
--- Orders per customer
+-- Orders per customer / Количество заказов на клиента
 
 SELECT
     customer_id,
@@ -279,7 +282,7 @@ FROM orders
 WHERE status = 'Completed';
 
 
--- Repeat customers
+-- Repeat customers / Повторные клиенты
 
 SELECT
     (
@@ -300,7 +303,7 @@ SELECT
     ) AS repeat_customers;
 
 
--- Repeat customer share
+-- Repeat customer share / Доля повторных клиентов
 
 SELECT
     ROUND(
@@ -332,7 +335,7 @@ SELECT
     ) AS repeat_customer_pct;
 
 
--- Average number of Completed orders per customer
+-- Average number of Completed orders per customer / Среднее число завершённых заказов на клиента
 
 SELECT
     ROUND(
@@ -344,7 +347,7 @@ WHERE status = 'Completed';
 
 
 -- ============================================================
--- 8. REVENUE BY CITY
+-- 8. REVENUE BY CITY / ВЫРУЧКА ПО ГОРОДАМ
 -- ============================================================
 
 SELECT
@@ -360,7 +363,7 @@ GROUP BY customers.city
 ORDER BY revenue DESC;
 
 
--- Revenue and revenue share by city
+-- Revenue and revenue share by city / Выручка и доля выручки по городам
 
 SELECT
     customers.city,
@@ -384,10 +387,10 @@ ORDER BY revenue DESC;
 
 
 -- ============================================================
--- 9. CUSTOMER SEGMENTS
+-- 9. CUSTOMER SEGMENTS / СЕГМЕНТЫ КЛИЕНТОВ
 -- ============================================================
 
--- Revenue by segment
+-- Revenue by segment / Выручка по сегментам
 
 SELECT
     segment,
@@ -402,7 +405,7 @@ GROUP BY segment
 ORDER BY revenue DESC;
 
 
--- Revenue and revenue share by segment
+-- Revenue and revenue share by segment / Выручка и доля выручки по сегментам
 
 SELECT
     segment,
@@ -425,7 +428,7 @@ GROUP BY segment
 ORDER BY revenue DESC;
 
 
--- Completed orders by segment
+-- Completed orders by segment / Завершённые заказы по сегментам
 
 SELECT
     segment,
@@ -438,7 +441,7 @@ GROUP BY segment
 ORDER BY completed_orders DESC;
 
 
--- Revenue, orders and AOV by segment
+-- Revenue, orders and AOV by segment / Выручка, заказы и средний чек по сегментам
 
 SELECT
     segment,
@@ -457,10 +460,10 @@ ORDER BY revenue DESC;
 
 
 -- ============================================================
--- 10. ORDERS WITHOUT ORDER ITEMS
+-- 10. ORDERS WITHOUT ORDER ITEMS / ЗАКАЗЫ БЕЗ ПОЗИЦИЙ
 -- ============================================================
 
--- Completed orders without order items
+-- Completed orders without order items by segment / Завершённые заказы без позиций по сегментам
 
 SELECT
     COUNT(*) AS orders_without_items
@@ -471,7 +474,7 @@ WHERE orders.status = 'Completed'
   AND order_items.order_id IS NULL;
 
 
--- Completed orders without order items by segment
+-- Completed orders without order items / Завершённые заказы без позиций by segment
 
 SELECT
     customers.segment,
@@ -487,7 +490,7 @@ GROUP BY customers.segment
 ORDER BY orders_without_items DESC;
 
 
--- Number of orders that have at least one order item
+-- Number of orders that have at least one order item / Количество заказов с позициями
 
 SELECT
     COUNT(DISTINCT order_id) AS orders_with_items
@@ -495,10 +498,10 @@ FROM order_items;
 
 
 -- ============================================================
--- 11. PAYMENT METHODS
+-- 11. PAYMENT METHODS / СПОСОБЫ ОПЛАТЫ
 -- ============================================================
 
--- Completed orders by payment method
+-- Completed orders by payment method / Завершённые заказы по способам оплаты
 
 SELECT
     payment_method,
@@ -509,7 +512,7 @@ GROUP BY payment_method
 ORDER BY completed_orders DESC;
 
 
--- Revenue by payment method
+-- Revenue by payment method / Выручка по способам оплаты
 
 SELECT
     payment_method,
@@ -522,7 +525,7 @@ GROUP BY payment_method
 ORDER BY revenue DESC;
 
 
--- Revenue share by payment method
+-- Revenue share by payment method / Доля выручки по способам оплаты
 
 SELECT
     payment_method,
@@ -544,10 +547,10 @@ ORDER BY revenue DESC;
 
 
 -- ============================================================
--- 12. ORDER STATUS
+-- 12. ORDER STATUS / СТАТУСЫ ЗАКАЗОВ
 -- ============================================================
 
--- Number of orders by status
+-- Number of orders by status / Количество заказов по статусам
 
 SELECT
     status,
@@ -557,7 +560,7 @@ GROUP BY status
 ORDER BY count_orders DESC;
 
 
--- Order share by status
+-- Order share by status / Доля заказов по статусам
 
 SELECT
     status,
@@ -572,7 +575,7 @@ GROUP BY status
 ORDER BY count_orders DESC;
 
 
--- Revenue by order status
+-- Revenue by order / Выручка по заказам status
 
 SELECT
     status,
@@ -584,7 +587,7 @@ GROUP BY status
 ORDER BY revenue DESC;
 
 
--- Revenue share by order status
+-- Revenue share by order status / Доля выручки по статусам заказов
 
 SELECT
     status,
@@ -604,7 +607,7 @@ ORDER BY revenue DESC;
 
 
 -- ============================================================
--- 13. MONTH-OVER-MONTH REVENUE CHANGE
+-- 13. MONTH-OVER-MONTH REVENUE CHANGE / ИЗМЕНЕНИЕ ВЫРУЧКИ МЕСЯЦ К МЕСЯЦУ
 -- ============================================================
 
 SELECT
@@ -664,7 +667,7 @@ ORDER BY
 
 
 -- ============================================================
--- 14. MONTHLY AVERAGE ORDER VALUE
+-- 14. MONTHLY AVERAGE ORDER VALUE / СРЕДНИЙ ЧЕК ПО МЕСЯЦАМ
 -- ============================================================
 
 SELECT
@@ -691,7 +694,7 @@ ORDER BY
 
 
 -- ============================================================
--- 15. TOP-3 PRODUCTS WITHIN EACH CATEGORY
+-- 15. TOP-3 PRODUCTS WITHIN EACH CATEGORY / ТОП-3 ТОВАРА В КАЖДОЙ КАТЕГОРИИ
 -- ============================================================
 
 WITH product_revenue AS (
